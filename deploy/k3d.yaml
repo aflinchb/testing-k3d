@@ -1,39 +1,53 @@
-apiVersion: k3d.io/v1alpha2
 kind: Simple
+apiVersion: k3d.io/v1alpha3
+name: k3d-cluster
 servers: 1
-network: k3d
+agents: 0
 kubeAPI:
-  hostIP: "0.0.0.0"
+  hostIP: 0.0.0.0
   hostPort: "6443"
+image: ""
+network: k3d
+subnet: ""
 volumes:
-  - volume: /prometheus:/prometheus
-    nodeFilters:
-      - server[0]
-  - volume: /grafana:/grafana
-    nodeFilters:
-      - server[0]
+- volume: /prometheus:/prometheus
+  nodeFilters:
+  - server:0
+- volume: /grafana:/grafana
+  nodeFilters:
+  - server:0
 ports:
-  - port: 30000:30000
-    nodeFilters:
-      - server[0]
-  - port: 30080:30080
-    nodeFilters:
-      - server[0]
-  - port: 30088:30088
-    nodeFilters:
-      - server[0]
-  - port: 32000:32000
-    nodeFilters:
-      - server[0]
-
+- port: 30000:30000
+  nodeFilters:
+  - server:0
+- port: 30080:30080
+  nodeFilters:
+  - server:0
+- port: 30088:30088
+  nodeFilters:
+  - server:0
+- port: 32000:32000
+  nodeFilters:
+  - server:0
 options:
   k3d:
     wait: true
-    timeout: "60s"
+    timeout: 1m0s
+    disableLoadbalancer: false
+    disableImageVolume: false
+    disableRollback: false
   k3s:
-    extraServerArgs:
-      - --tls-san=127.0.0.1
-    extraAgentArgs: []
+    extraArgs:
+    - arg: --tls-san=127.0.0.1
+      nodeFilters:
+      - server:*
+    nodeLabels: []
   kubeconfig:
     updateDefaultKubeconfig: true
     switchCurrentContext: true
+  runtime:
+    gpuRequest: ""
+    serversMemory: ""
+    agentsMemory: ""
+    labels: []
+env: []
